@@ -5,16 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>S&P 500 Option Pricer</title>
   <style>
-    body { font-family: Arial, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
+    body { font-family: Arial, sans-serif; max-width: 1100px; margin: 2rem auto; padding: 0 1rem; }
     h1 { margin-bottom: 0.4rem; }
     form { display: grid; grid-template-columns: repeat(2, minmax(220px, 1fr)); gap: 0.8rem 1rem; margin: 1rem 0 1.5rem; }
     label { display: block; font-size: 0.92rem; color: #333; margin-bottom: 0.2rem; }
     input { width: 100%; padding: 0.45rem; }
     .full { grid-column: 1 / -1; }
-    button { padding: 0.6rem 1rem; font-weight: 600; }
+    .btn { padding: 0.6rem 1rem; font-weight: 600; text-decoration: none; display: inline-block; }
+    .btn-csv { margin-left: 0.5rem; }
     .error { color: #a40000; margin-top: 0.6rem; }
-    table { border-collapse: collapse; width: 100%; margin-top: 0.8rem; }
-    th, td { border: 1px solid #ddd; padding: 0.55rem; text-align: right; }
+    table { border-collapse: collapse; width: 100%; margin-top: 0.8rem; font-size: 0.92rem; }
+    th, td { border: 1px solid #ddd; padding: 0.5rem; text-align: right; }
     th:first-child, td:first-child { text-align: left; }
     .muted { color: #666; font-size: 0.9rem; }
   </style>
@@ -55,7 +56,10 @@
     </div>
 
     <div class="full">
-      <button type="submit">Calculate</button>
+      <button class="btn" type="submit">Calculate</button>
+      {% if results %}
+      <a class="btn btn-csv" href="/export_csv?valuation_date={{ form.valuation_date }}&expiry_date={{ form.expiry_date }}&spot={{ form.spot }}&strike={{ form.strike }}&vol_pct={{ form.vol_pct }}&risk_free_pct={{ form.risk_free_pct }}">Export CSV</a>
+      {% endif %}
     </div>
   </form>
 
@@ -68,6 +72,24 @@
     <p><strong>T (years):</strong> {{ '%.6f'|format(results.t_years) }}</p>
     <p><strong>Call:</strong> {{ '%.4f'|format(results.call_atm) }} &nbsp; | &nbsp; <strong>Put:</strong> {{ '%.4f'|format(results.put_atm) }}</p>
 
+    <h2>ATM Greeks</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Greek</th>
+          <th>Call</th>
+          <th>Put</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Delta</td><td>{{ '%.6f'|format(results.atm_greeks.call_delta) }}</td><td>{{ '%.6f'|format(results.atm_greeks.put_delta) }}</td></tr>
+        <tr><td>Gamma</td><td>{{ '%.6f'|format(results.atm_greeks.gamma) }}</td><td>{{ '%.6f'|format(results.atm_greeks.gamma) }}</td></tr>
+        <tr><td>Vega</td><td>{{ '%.6f'|format(results.atm_greeks.vega) }}</td><td>{{ '%.6f'|format(results.atm_greeks.vega) }}</td></tr>
+        <tr><td>Theta (annual)</td><td>{{ '%.6f'|format(results.atm_greeks.call_theta) }}</td><td>{{ '%.6f'|format(results.atm_greeks.put_theta) }}</td></tr>
+        <tr><td>Rho</td><td>{{ '%.6f'|format(results.atm_greeks.call_rho) }}</td><td>{{ '%.6f'|format(results.atm_greeks.put_rho) }}</td></tr>
+      </tbody>
+    </table>
+
     <h2>Adjacent Strikes (±5%, ±10%)</h2>
     <table>
       <thead>
@@ -76,6 +98,10 @@
           <th>Strike</th>
           <th>Call</th>
           <th>Put</th>
+          <th>Call Δ</th>
+          <th>Put Δ</th>
+          <th>Gamma</th>
+          <th>Vega</th>
         </tr>
       </thead>
       <tbody>
@@ -85,6 +111,10 @@
             <td>{{ '%.2f'|format(row.strike) }}</td>
             <td>{{ '%.4f'|format(row.call) }}</td>
             <td>{{ '%.4f'|format(row.put) }}</td>
+            <td>{{ '%.4f'|format(row.call_delta) }}</td>
+            <td>{{ '%.4f'|format(row.put_delta) }}</td>
+            <td>{{ '%.6f'|format(row.gamma) }}</td>
+            <td>{{ '%.4f'|format(row.vega) }}</td>
           </tr>
         {% endfor %}
       </tbody>

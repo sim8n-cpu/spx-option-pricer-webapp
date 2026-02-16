@@ -1,4 +1,4 @@
-from pricer import black_scholes_call_put
+from pricer import black_scholes_call_put, black_scholes_greeks
 
 
 def test_black_scholes_basic_positive_values():
@@ -17,3 +17,11 @@ def test_put_call_parity_close():
     lhs = c - p
     rhs = s - k * (2.718281828459045 ** (-r * t))
     assert abs(lhs - rhs) < 1e-6
+
+
+def test_greeks_sanity():
+    g = black_scholes_greeks(spot=100, strike=100, t=1.0, r=0.05, sigma=0.2)
+    assert 0 < g["call_delta"] < 1
+    assert -1 < g["put_delta"] < 0
+    assert g["gamma"] > 0
+    assert g["vega"] > 0
