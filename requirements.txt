@@ -1,4 +1,5 @@
 Flask==3.0.3
+gunicorn==22.0.0
 yfinance==0.2.63
 python-dateutil==2.9.0.post0
 pytest==8.3.2

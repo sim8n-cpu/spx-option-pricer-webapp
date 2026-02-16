@@ -14,6 +14,14 @@ A small Flask web app to price European call/put options with Black–Scholes.
   - ATM call and put values
   - Adjacent strikes at `-10%`, `-5%`, `+0%`, `+5%`, `+10%`
 
+## Deploy (Render)
+
+This repo includes `render.yaml` for easy deployment on Render.
+
+1. Go to Render dashboard and choose **New +** → **Blueprint**.
+2. Connect this GitHub repo: `sim8n-cpu/spx-option-pricer-webapp`.
+3. Render will detect `render.yaml` and deploy automatically.
+
 ## Run locally
 
 ```bash
